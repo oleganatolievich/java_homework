@@ -1,5 +1,6 @@
 package Lesson_2;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -9,7 +10,7 @@ public class Main {
         floodArrayWith3();
         makeSixesGreatAgain();
         fillMatrixDiagonally(1);
-        findExtremumsInArray();
+        printExtremesInArray();
         int arrSize = getUserInt();
         if (arrSize < 2) {
             System.out.println("Вы, батенька, юный хакер, не иначе.");
@@ -17,7 +18,12 @@ public class Main {
             System.exit(1);
         }
         int arr[] = getRandomArray(arrSize);
-        System.out.println((isArraySymmetric(arr) ? "Симметрия есть" : "Симметрии нет"));
+        System.out.println("Рандомный массив: " + Arrays.toString(arr));
+        System.out.println("В массиве " + (isArraySymmetric(arr) ? " есть симметрия" : " нет симметрии"));
+        shiftArray(arr, 3);
+        System.out.println("После сдвига на 3 вправо: " + Arrays.toString(arr));
+        shiftArray(arr, -3);
+        System.out.println("После сдвига на 3 влево: " + Arrays.toString(arr));
         scan.close();
     }
 
@@ -38,12 +44,12 @@ public class Main {
             int randNumber = (int)(Math.random() * 10);
             arr[i] = (randNumber < 5 ? 0 : 1);
         }
-        String Info = "";
+        String info = "";
         for(int i = 0; i < arrSize; i++) {
-            Info = "до инвертации №" + i + " = " + arr[i];
+            info = "до инвертации №" + i + " = " + arr[i];
             arr[i] = 1 - arr[i];
-            Info += ", после инвертации = " + arr[i];
-            System.out.println(Info);
+            info = info.concat(", после инвертации = " + arr[i]);
+            System.out.println(info);
         }
     }
 
@@ -83,14 +89,14 @@ public class Main {
             scan.close();
             System.exit(1);
         }
-        int arr[][] = new int[arrSize][arrSize];
+        int[][] arr = new int[arrSize][arrSize];
         for(int i = 0; i < arrSize; i++) {
             arr[i][i] = filler;
         }
         for(int i = 0; i < arrSize; i++) {
             String row = "";
             for(int j = 0; j < arrSize; j++) {
-                row = row + arr[i][j] + " ";
+                row = row.concat(arr[i][j] + " ");
             }
             System.out.println(row);
         }
@@ -105,14 +111,14 @@ public class Main {
     }
 
     private static int[] getRandomArray(int arrSize) {
-        int arr[] = new int[arrSize];
+        int[] arr = new int[arrSize];
         for(int i = 0; i < arrSize; i++) {
             arr[i] = (int) (Math.random() * 100);
         }
         return arr;
     }
 
-    private static void findExtremumsInArray() {
+    private static void printExtremesInArray() {
         int arrSize = getUserInt();
         if (arrSize < 2) {
             System.out.println("Вы, батенька, юный хакер, не иначе.");
@@ -154,12 +160,12 @@ public class Main {
         int arrSize = arr.length;
         int wholeSum = 0;
         int currentSum = 0;
-        for(int i = 0; i < arrSize; i++) {
-            wholeSum += arr[i];
+        for (int value : arr) {
+            wholeSum += value;
         }
         boolean thereIsSymmetry = false;
-        for(int i = 0; i < arrSize; i++) {
-            currentSum += arr[i];
+        for (int value : arr) {
+            currentSum += value;
             if ((wholeSum / 2 == currentSum) && (wholeSum % 2) == 0) {
                 thereIsSymmetry = true;
                 break;
@@ -173,9 +179,23 @@ public class Main {
     //при этом метод должен сместить все элементы массива на n позиций.
     //Для усложнения задачи нельзя пользоваться вспомогательными массивами.
 
-    private static void shiftArray(int[] arr, int step) {
-        //храним текущее значение по индексу во временной переменной
-        //сдвигаем в цикле на +1 или -1 значения, подставляем заранее сохраненное по индексу + 1 или -1
-        //в целом так.
+    private static void shiftArray(int[] arr, int shiftsAmount) {
+        if (shiftsAmount == 0 || arr.length == 0) {
+            return;
+        }
+        int absShiftDirection = Math.abs(shiftsAmount);
+        for (int shiftCounter = 0; shiftCounter < absShiftDirection; shiftCounter++) {
+            int curIndex;
+            int upperIndex = arr.length - 1;
+            int prevValue = arr[shiftsAmount < 0 ? 0 : upperIndex];
+            for (int i = 0; i < arr.length; i++) {
+                curIndex = (shiftsAmount < 0 ? upperIndex - i : i);
+                //тут можно было обернуть операцию присвоения в что-то типа метода swapValueInArray
+                //в таком случае пришлось бы передавать сугубо локальные переменные в параметрах
+                int tempVar = arr[curIndex];
+                arr[curIndex] = prevValue;
+                prevValue = tempVar;
+            }
+        }
     }
 }
